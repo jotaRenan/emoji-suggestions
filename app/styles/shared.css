@@ -1,0 +1,20 @@
+.anchor-text-input {
+    anchor-name: --anchor-el;
+}
+
+.positioned-notice {
+    position-anchor: --anchor-el;
+    inset-area: top span-right;
+    position: absolute;
+    bottom: anchor(top);
+    offset-anchor: 10px;
+    margin-bottom: 2px;
+}
+
+.emoji-suggestion-box {
+    min-width: 120px;
+    min-height: 80px;
+    background-color: hotpink;
+    opacity: 0.8;
+    border-radius: 1rem;
+}

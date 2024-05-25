@@ -1,31 +1,58 @@
-import { useState } from "react";
+import { useState, ElementRef, useRef } from "react";
 
-import { Emoji } from "emojibase";
 import compactEmojis from "emojibase-data/pt/compact.json";
+import { EmojiSuggestion } from "./emoji-suggestion";
 
 const LIMIT_CHAR = ":";
 export const TextArea = () => {
   const [isOn, setIsOn] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [text, setText] = useState("");
 
+  const textAreaRef = useRef<ElementRef<"textarea">>(null);
   function reset() {
     setIsOn(false);
     setSearchTerm("");
   }
 
-  function addEmoji(tag: string) {
-    const match = compactEmojis.find(
-      (e) => e.tags?.includes(tag) ?? false
-    )?.unicode;
-    setEmojis((curr) => curr.concat([match ?? tag]));
+  function findEmoji(tag: string) {
+    return compactEmojis.find((e) => e.tags?.includes(tag) ?? false)?.unicode;
   }
 
-  const [emojis, setEmojis] = useState<string[]>([]);
+  function addEmoji(emoji: string) {
+    replaceEmojiFind(emoji);
+  }
+
+  function replaceEmojiFind(unicode: string) {
+    if (!textAreaRef.current) {
+      throw new Error("aaa");
+    }
+    const final = textAreaRef.current.selectionStart - 1;
+
+    let i = final;
+    for (i; i > 0; i--) {
+      if (text[i] === LIMIT_CHAR) {
+        break;
+      }
+    }
+
+    setText((curr) =>
+      curr
+        .slice(0, i)
+        .concat(unicode)
+        .concat(text.slice(final + 1))
+        .concat(" ")
+    );
+  }
 
   return (
     <>
       <textarea
+        ref={textAreaRef}
+        className="anchor-text-input"
+        value={text}
         rows={3}
+        onChange={(e) => setText(e.currentTarget.value)}
         onKeyDown={(e) => {
           if (e.key !== LIMIT_CHAR) {
             if (/[\n\r\s]+/.test(e.key) || e.key === "Enter") {
@@ -40,10 +67,6 @@ export const TextArea = () => {
             .slice(0, currentPosition)
             .split(" ")
             .at(-1);
-          // ?.split(":")
-          // .at(-1);
-
-          console.log(lastEntireWord);
 
           if (lastEntireWord === undefined) {
             return false;
@@ -57,6 +80,7 @@ export const TextArea = () => {
           if (!isOn) {
             return false;
           }
+
           if (lastEntireWord[0] === LIMIT_CHAR) {
             const x = lastEntireWord.slice(
               lastEntireWord.split("").lastIndexOf(":") + 1
@@ -64,14 +88,27 @@ export const TextArea = () => {
 
             setIsOn(false);
             if (x.length > 0) {
-              addEmoji(x);
+              const match = findEmoji(x);
+              if (match) {
+                addEmoji(match);
+                e.preventDefault();
+              }
             }
             return false;
           }
         }}
-      ></textarea>
+      />
+      {isOn && (
+        <EmojiSuggestion
+          searchTerm={searchTerm}
+          onChange={(e) => {
+            addEmoji(e.unicode);
+            replaceEmojiFind(e.unicode);
+          }}
+        />
+      )}
+      <p>{text}</p>
       {JSON.stringify(isOn, null, 2)}
-      {JSON.stringify(emojis, null, 2)}
     </>
   );
 };
