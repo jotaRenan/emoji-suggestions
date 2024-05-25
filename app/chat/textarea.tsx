@@ -4,6 +4,15 @@ import compactEmojis from "emojibase-data/pt/compact.json";
 import { EmojiSuggestion } from "./emoji-suggestion";
 
 const LIMIT_CHAR = ":";
+
+/**
+ * 1. prevent the suggestion box from closing. Allow multiple instances to be added
+ * 2. improve UI
+ * 3. ignore case of character when searching
+ * 4. make it work with multiline pieces of text
+ * 5. allow pressing tab to select emoji at any time while typing
+ */
+
 export const TextArea = () => {
   const [isOn, setIsOn] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
