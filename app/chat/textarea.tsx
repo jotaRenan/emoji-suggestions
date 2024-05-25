@@ -54,19 +54,30 @@ export const TextArea = () => {
         rows={3}
         onChange={(e) => setText(e.currentTarget.value)}
         onKeyDown={(e) => {
-          if (e.key !== LIMIT_CHAR) {
-            if (/[\n\r\s]+/.test(e.key) || e.key === "Enter") {
-              setIsOn(false);
-            }
-            return false;
-          }
           const currentValue = e.currentTarget.value;
-          const currentPosition = e.currentTarget.selectionStart;
 
+          const currentPosition = e.currentTarget.selectionStart;
           const lastEntireWord = currentValue
             .slice(0, currentPosition)
             .split(" ")
             .at(-1);
+
+          if (e.key !== LIMIT_CHAR) {
+            if (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) {
+              return false;
+            }
+
+            if (isOn) {
+              if (/[\n\r\s]+/.test(e.key) || e.key === "Enter") {
+                reset();
+              } else {
+                if (lastEntireWord) {
+                  setSearchTerm(lastEntireWord.slice(1));
+                }
+              }
+            }
+            return false;
+          }
 
           if (lastEntireWord === undefined) {
             return false;
@@ -86,7 +97,7 @@ export const TextArea = () => {
               lastEntireWord.split("").lastIndexOf(":") + 1
             );
 
-            setIsOn(false);
+            reset();
             if (x.length > 0) {
               const match = findEmoji(x);
               if (match) {
@@ -103,7 +114,8 @@ export const TextArea = () => {
           searchTerm={searchTerm}
           onChange={(e) => {
             addEmoji(e.unicode);
-            replaceEmojiFind(e.unicode);
+            reset();
+            textAreaRef.current?.focus();
           }}
         />
       )}
