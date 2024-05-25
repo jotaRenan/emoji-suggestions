@@ -13,8 +13,14 @@
 
 .emoji-suggestion-box {
     min-width: 120px;
+    max-width: 140px;
     min-height: 80px;
+    max-height: 3rem;
     background-color: hotpink;
     opacity: 0.8;
     border-radius: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: auto;
+    padding: .5rem;
 }
