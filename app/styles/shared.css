@@ -1,37 +1,47 @@
 .anchor-text-input {
-    anchor-name: --anchor-el;
+  anchor-name: --anchor-el;
 }
 
 .positioned-notice {
-    position-anchor: --anchor-el;
-    inset-area: top span-right;
-    position: absolute;
-    bottom: anchor(top);
-    offset-anchor: 10px;
-    margin-bottom: 2px;
+  position-anchor: --anchor-el;
+  inset-area: top span-right;
+  position: absolute;
+  bottom: anchor(top);
+  offset-anchor: 10px;
+  margin-bottom: 2px;
 }
 
 .emoji-suggestion-box {
-    min-width: 120px;
-    max-width: 300px;
-    min-height: 80px;
-    max-height: 3rem;
-    background-color: hotpink;
-    border-radius: 1rem;
-    overflow: auto;
-    padding: .5rem;
+  --item-height: 2rem;
+  min-width: 120px;
+  max-width: 300px;
+  max-height: calc(3 * var(--item-height));
+  background-color: hotpink;
+  border-radius: 0.5rem;
+  overflow: auto;
 
-    & > * button {
-        width: 100%;
+  label {
+    padding: 0 0.5rem;
+    height: var(--item-height);
+    --bg-color: gold;
+
+    &:hover {
+      cursor: pointer;
+      background-color: orange;
+
+      @supports (color: rgb(from white r g b)) {
+        background-color: hsl(from var(--bg-color) calc(h - 4) calc(s - 20) l);
+      }
     }
 
     input[type="radio"] {
-        position: fixed;
-        opacity: 0;
-        pointer-events: none;
+      position: fixed;
+      opacity: 0;
+      pointer-events: none;
     }
 
-    label:has(input[type="radio"]:checked) {
-        background-color: gold;
+    &:has(input[type="radio"]:checked) {
+      background-color: var(--bg-color);
     }
+  }
 }
