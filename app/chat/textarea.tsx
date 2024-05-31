@@ -35,7 +35,7 @@ export const TextArea = () => {
   function addEmoji(emoji: string) {
     replaceEmojiFind(emoji);
   }
-  textAreaRef.current?.onchange;
+
   function replaceEmojiFind(unicode: string) {
     if (!textAreaRef.current) {
       throw new Error("aaa");
@@ -83,9 +83,6 @@ export const TextArea = () => {
             if (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) {
               return false;
             }
-            // if (isOn && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
-            //   e.preventDefault();
-            // }
             return false;
           }
           const lastEntireWord = getLastEntireWord(e);
