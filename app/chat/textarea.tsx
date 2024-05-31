@@ -104,7 +104,7 @@ export const TextArea = () => {
 
           if (lastEntireWord[0] === LIMIT_CHAR) {
             const x = lastEntireWord.slice(
-              lastEntireWord.split("").lastIndexOf(":") + 1
+              lastEntireWord.split("").lastIndexOf(LIMIT_CHAR) + 1
             );
 
             reset();
