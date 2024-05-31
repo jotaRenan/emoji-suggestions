@@ -6,11 +6,11 @@ import { EmojiSuggestion } from "./emoji-suggestion";
 const LIMIT_CHAR = ":";
 
 /**
- * 1. prevent the suggestion box from closing. Allow multiple instances to be added
+ * 1. 🗑️ prevent the suggestion box from closing. Allow multiple instances to be added
  * 2. improve UI
  * 3. ignore case of character when searching
  * 4. make it work with multiline pieces of text
- * 5. allow pressing tab to select emoji at any time while typing
+ * 5. ✅ allow pressing tab to select emoji at any time while typing
  */
 
 export const TextArea = () => {
@@ -32,7 +32,7 @@ export const TextArea = () => {
   function addEmoji(emoji: string) {
     replaceEmojiFind(emoji);
   }
-
+  textAreaRef.current?.onchange;
   function replaceEmojiFind(unicode: string) {
     if (!textAreaRef.current) {
       throw new Error("aaa");
@@ -80,6 +80,9 @@ export const TextArea = () => {
             if (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) {
               return false;
             }
+            // if (isOn && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
+            //   e.preventDefault();
+            // }
             return false;
           }
           const lastEntireWord = getLastEntireWord(e);
@@ -114,9 +117,10 @@ export const TextArea = () => {
         }}
       />
       <EmojiSuggestion
+        textAreaRef={textAreaRef.current}
         searchTerm={searchTerm}
         onChange={(e) => {
-          addEmoji(e.unicode);
+          addEmoji(e);
           reset();
           textAreaRef.current?.focus();
         }}
