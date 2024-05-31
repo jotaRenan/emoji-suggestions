@@ -83,6 +83,10 @@ export const TextArea = () => {
             if (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) {
               return false;
             }
+            if (e.key === "Escape") {
+              reset();
+              return;
+            }
             return false;
           }
           const lastEntireWord = getLastEntireWord(e);
