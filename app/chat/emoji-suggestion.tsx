@@ -18,8 +18,9 @@ export const EmojiSuggestion = ({
   const form = useRef<ElementRef<"form">>(null);
   const isInactive = searchTerm.length <= 2;
 
+  const searchTermRegexp = new RegExp(searchTerm, "i");
   const matches = compactEmojis.filter(
-    (e) => e.tags?.some((tag) => tag.startsWith(searchTerm)) ?? false
+    (e) => e.tags?.some((tag) => searchTermRegexp.test(tag)) ?? false
   );
 
   useEffect(() => {
