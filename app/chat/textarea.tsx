@@ -2,6 +2,7 @@ import { useState, ElementRef, useRef } from "react";
 
 import compactEmojis from "emojibase-data/pt/compact.json";
 import { EmojiSuggestion } from "./emoji-suggestion";
+import { flushSync } from "react-dom";
 
 const LIMIT_CHAR = ":";
 
@@ -11,6 +12,7 @@ const LIMIT_CHAR = ":";
  * 3. ✅ ignore case of character when searching
  * 4. make it work with multiline pieces of text
  * 5. ✅ allow pressing tab to select emoji at any time while typing
+ * 6. remove trailing whitespace after emoji
  */
 
 export const TextArea = () => {
@@ -49,13 +51,16 @@ export const TextArea = () => {
       }
     }
 
-    setText((curr) =>
-      curr
-        .slice(0, i)
-        .concat(unicode)
-        .concat(text.slice(final + 1))
-        .concat(" ")
-    );
+    // force state changes to be applied before accessing the dom to set the selection range
+    flushSync(() => {
+      setText((curr) =>
+        curr
+          .substring(0, i)
+          .concat(unicode)
+          .concat(curr.substring(final + 1))
+      );
+    });
+    textAreaRef.current.setSelectionRange(i + 1, i + 1);
   }
 
   return (
