@@ -15,6 +15,7 @@ const LIMIT_CHAR = ":";
  * 6. ✅ remove trailing whitespace after emoji
  * 7. ✅ streak of emojis
  * 8. ✅ implement fuzzy search
+ * 9. open dialog where the user started typing the emoji's keywork
  */
 
 export const TextArea = () => {
