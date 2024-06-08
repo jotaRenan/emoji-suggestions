@@ -93,7 +93,6 @@ export const EmojiSuggestion = ({
       className="positioned-notice emoji-suggestion-box"
       onSubmit={(e) => {
         onChange(e.currentTarget["selected-emoji"]?.value);
-        setSelectedIndex(0);
         e.preventDefault();
         return false;
       }}

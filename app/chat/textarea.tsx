@@ -153,15 +153,17 @@ export const TextArea = () => {
           }
         }}
       />
-      <EmojiSuggestion
-        textAreaRef={textAreaRef.current}
-        searchTerm={searchTerm}
-        onChange={(e) => {
-          addEmoji(e);
-          // reset();
-          textAreaRef.current?.focus();
-        }}
-      />
+      {searchTerm.length > 2 && (
+        <EmojiSuggestion
+          textAreaRef={textAreaRef.current}
+          searchTerm={searchTerm}
+          onChange={(e) => {
+            addEmoji(e);
+            // reset();
+            textAreaRef.current?.focus();
+          }}
+        />
+      )}
       <p>{text}</p>
       {JSON.stringify(isOn, null, 2)}
     </>
