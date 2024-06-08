@@ -16,7 +16,6 @@ export const EmojiSuggestion = ({
   const [lastSuccessfulMatch, setLastSuccessfulMatch] = useState(initial);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const form = useRef<ElementRef<"form">>(null);
-  const isInactive = searchTerm.length <= 2;
 
   const searchTermRegexp = new RegExp(searchTerm, "i");
   const matches = compactEmojis.filter(
@@ -25,10 +24,6 @@ export const EmojiSuggestion = ({
 
   useEffect(() => {
     const submitOnEnterAndTab = (e: KeyboardEvent) => {
-      if (isInactive) {
-        return;
-      }
-
       if (e.key === "Enter" || e.key === "Tab") {
         form.current?.requestSubmit();
         e.preventDefault();
@@ -38,14 +33,10 @@ export const EmojiSuggestion = ({
 
     return () =>
       textAreaRef?.removeEventListener("keydown", submitOnEnterAndTab);
-  }, [textAreaRef, isInactive]);
+  }, [textAreaRef]);
 
   useEffect(() => {
     const navigateViaArrowKeys = (e: KeyboardEvent) => {
-      if (isInactive) {
-        return;
-      }
-
       const scrollTo = (idx: number) => {
         const children = Array.from(form.current?.children ?? []);
         children.at(idx)?.scrollIntoView({ block: "nearest" });
@@ -74,14 +65,7 @@ export const EmojiSuggestion = ({
 
     return () =>
       textAreaRef?.removeEventListener("keydown", navigateViaArrowKeys);
-  }, [lastSuccessfulMatch.length, textAreaRef, isInactive]);
-
-  if (isInactive) {
-    if (lastSuccessfulMatch !== initial) {
-      setLastSuccessfulMatch(initial);
-    }
-    return null;
-  }
+  }, [lastSuccessfulMatch.length, textAreaRef]);
 
   if (matches.length > 0 && lastSuccessfulMatch.length !== matches.length) {
     setLastSuccessfulMatch(matches);
