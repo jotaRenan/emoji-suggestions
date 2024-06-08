@@ -12,7 +12,8 @@ const LIMIT_CHAR = ":";
  * 3. ✅ ignore case of character when searching
  * 4. make it work with multiline pieces of text
  * 5. ✅ allow pressing tab to select emoji at any time while typing
- * 6. remove trailing whitespace after emoji
+ * 6. ✅ remove trailing whitespace after emoji
+ * 7. ✅ streak of emojis
  */
 
 export const TextArea = () => {
