@@ -16,6 +16,9 @@ const LIMIT_CHAR = ":";
  * 7. ✅ streak of emojis
  * 8. ✅ implement fuzzy search
  * 9. open dialog where the user started typing the emoji's keywork
+ * 10. fix movement using arrow keys
+ *     - should close emoji-suggestion when exiting boundaries of word
+ *     - behavior is weird when on an emoji streak
  */
 
 export const TextArea = () => {
@@ -130,6 +133,10 @@ export const TextArea = () => {
           const lastEntireWord = getLastEntireWord(e);
 
           if (lastEntireWord.length === 0) {
+            if (streak > 0) {
+              reset();
+              return;
+            }
             setIsOn(true);
             return false;
           }
@@ -167,6 +174,7 @@ export const TextArea = () => {
       )}
       <p>{text}</p>
       {JSON.stringify(isOn, null, 2)}
+      <p>Streak: {streak}</p>
     </>
   );
 };
