@@ -17,6 +17,7 @@ const LIMIT_CHAR = ":";
 
 export const TextArea = () => {
   const [isOn, setIsOn] = useState(false);
+  const [streak, setStreak] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [text, setText] = useState("");
 
@@ -25,6 +26,7 @@ export const TextArea = () => {
   function reset() {
     setIsOn(false);
     setSearchTerm("");
+    setStreak(0);
   }
 
   function findEmoji(searchTerm: string) {
@@ -35,7 +37,34 @@ export const TextArea = () => {
   }
 
   function addEmoji(emoji: string) {
-    replaceEmojiFind(emoji);
+    if (streak === 0) {
+      replaceEmojiFind(emoji);
+    } else {
+      addEmojiAtSelectionStart(emoji);
+    }
+  }
+
+  function increaseStreak() {
+    setStreak((curr) => curr + 1);
+  }
+
+  function addEmojiAtSelectionStart(unicode: string) {
+    if (!textAreaRef.current) {
+      throw new Error("aaa");
+    }
+    const i = textAreaRef.current.selectionStart - 1;
+
+    flushSync(() => {
+      setText((curr) => {
+        const prefix = curr.substring(0, i + unicode.length);
+        const suffix = curr.substring(i + unicode.length);
+        return prefix + unicode + suffix;
+      });
+    });
+
+    const offset = i + 1 + unicode.length;
+    textAreaRef.current.setSelectionRange(offset, offset);
+    increaseStreak();
   }
 
   function replaceEmojiFind(unicode: string) {
@@ -53,14 +82,15 @@ export const TextArea = () => {
 
     // force state changes to be applied before accessing the dom to set the selection range
     flushSync(() => {
-      setText((curr) =>
-        curr
-          .substring(0, i)
-          .concat(unicode)
-          .concat(curr.substring(final + 1))
-      );
+      setText((curr) => {
+        const prefix = curr.substring(0, i);
+        const suffix = curr.substring(final + 1);
+        return prefix + unicode + suffix;
+      });
     });
+
     textAreaRef.current.setSelectionRange(i + 1, i + 1);
+    increaseStreak();
   }
 
   return (
@@ -127,7 +157,7 @@ export const TextArea = () => {
         searchTerm={searchTerm}
         onChange={(e) => {
           addEmoji(e);
-          reset();
+          // reset();
           textAreaRef.current?.focus();
         }}
       />
