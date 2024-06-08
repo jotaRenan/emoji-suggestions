@@ -10,7 +10,7 @@ const LIMIT_CHAR = ":";
  * 1. 🗑️ prevent the suggestion box from closing. Allow multiple instances to be added
  * 2. improve UI
  * 3. ✅ ignore case of character when searching
- * 4. make it work with multiline pieces of text
+ * 4. ✅ make it work with multiline pieces of text
  * 5. ✅ allow pressing tab to select emoji at any time while typing
  * 6. ✅ remove trailing whitespace after emoji
  * 7. ✅ streak of emojis
@@ -178,6 +178,9 @@ function getLastEntireWord(
 
   for (let i = currentPosition - 1; i >= 0; i--) {
     const char = currentValue[i];
+    if (char === "\n") {
+      break;
+    }
     if (char === LIMIT_CHAR) {
       const result = currentValue.substring(i, currentPosition);
       return result;
