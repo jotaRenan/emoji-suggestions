@@ -94,6 +94,9 @@ export const EmojiSuggestion = ({
                 setSelectedIndex(idx);
                 form.current?.requestSubmit();
               }}
+              onClick={() => {
+                if (idx === selectedIndex) form.current?.requestSubmit();
+              }}
             />
             {item.unicode} - :{matches?.[0].value ?? item.label}:
           </label>
