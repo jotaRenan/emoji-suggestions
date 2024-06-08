@@ -95,9 +95,6 @@ export const TextArea = () => {
             return false;
           }
           const lastEntireWord = getLastEntireWord(e);
-          if (lastEntireWord === undefined) {
-            return false;
-          }
 
           if (lastEntireWord.length === 0) {
             setIsOn(true);
@@ -146,11 +143,19 @@ function getLastEntireWord(
     | React.KeyboardEvent<HTMLTextAreaElement>
 ) {
   const currentValue = e.currentTarget.value;
-
   const currentPosition = e.currentTarget.selectionStart;
-  const lastEntireWord = currentValue
-    .slice(0, currentPosition)
-    .split(" ")
-    .at(-1);
-  return lastEntireWord;
+
+  for (let i = currentPosition - 1; i >= 0; i--) {
+    const char = currentValue[i];
+    if (char === LIMIT_CHAR) {
+      const result = currentValue.substring(i, currentPosition);
+      return result;
+    }
+    if (char === " ") {
+      const result = currentValue.substring(i + 1, currentPosition);
+      return result;
+    }
+  }
+
+  return "";
 }
