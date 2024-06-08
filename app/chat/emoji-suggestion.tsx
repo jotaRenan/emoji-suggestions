@@ -1,8 +1,7 @@
 import { CompactEmoji } from "emojibase";
 import compactEmojis from "emojibase-data/pt/compact.json";
-import { ElementRef, useEffect, useRef, useState } from "react";
-
-const initial: ReadonlyArray<CompactEmoji> = [];
+import { ElementRef, useEffect, useMemo, useRef, useState } from "react";
+import Fuse, { FuseResult, IFuseOptions } from "fuse.js";
 
 export const EmojiSuggestion = ({
   onChange,
@@ -17,9 +16,9 @@ export const EmojiSuggestion = ({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const form = useRef<ElementRef<"form">>(null);
 
-  const searchTermRegexp = new RegExp(searchTerm, "i");
-  const matches = compactEmojis.filter(
-    (e) => e.tags?.some((tag) => searchTermRegexp.test(tag)) ?? false
+  const matches = useMemo(
+    () => fuse.search(searchTerm, { limit: 20 }),
+    [searchTerm]
   );
 
   useEffect(() => {
@@ -67,7 +66,7 @@ export const EmojiSuggestion = ({
       textAreaRef?.removeEventListener("keydown", navigateViaArrowKeys);
   }, [lastSuccessfulMatch.length, textAreaRef]);
 
-  if (matches.length > 0 && lastSuccessfulMatch.length !== matches.length) {
+  if (matches.length > 0 && lastSuccessfulMatch !== matches) {
     setLastSuccessfulMatch(matches);
   }
 
@@ -84,22 +83,35 @@ export const EmojiSuggestion = ({
       {lastSuccessfulMatch.length === 0 ? (
         <span>None found</span>
       ) : (
-        lastSuccessfulMatch.map((e, idx) => (
-          <label style={{ display: "block" }} key={e.unicode}>
+        lastSuccessfulMatch.map(({ item, matches }, idx) => (
+          <label style={{ display: "block" }} key={item.unicode}>
             <input
               checked={idx === selectedIndex}
               type="radio"
               name="selected-emoji"
-              value={e.unicode}
+              value={item.unicode}
               onChange={() => {
                 setSelectedIndex(idx);
                 form.current?.requestSubmit();
               }}
             />
-            {e.unicode} - :{e.tags?.[0]}:
+            {item.unicode} - :{matches?.[0].value ?? item.label}:
           </label>
         ))
       )}
     </form>
   );
 };
+
+const options = {
+  includeScore: false,
+  includeMatches: true,
+  keys: ["label", "tags"],
+  isCaseSensitive: false,
+  minMatchCharLength: 2,
+  threshold: 0.1,
+} satisfies IFuseOptions<CompactEmoji>;
+
+const fuse = new Fuse(compactEmojis, options);
+
+const initial: FuseResult<CompactEmoji>[] = [];

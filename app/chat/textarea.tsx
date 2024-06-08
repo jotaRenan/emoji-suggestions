@@ -14,6 +14,7 @@ const LIMIT_CHAR = ":";
  * 5. ✅ allow pressing tab to select emoji at any time while typing
  * 6. ✅ remove trailing whitespace after emoji
  * 7. ✅ streak of emojis
+ * 8. ✅ implement fuzzy search
  */
 
 export const TextArea = () => {
