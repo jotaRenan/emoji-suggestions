@@ -168,6 +168,7 @@ export const TextArea = () => {
           searchTerm={searchTerm}
           onChange={(e) => {
             addEmoji(e);
+            reset(); // remove this to allow streaks
             textAreaRef.current?.focus();
           }}
         />
