@@ -22,48 +22,56 @@ export const EmojiSuggestion = ({
   );
 
   useEffect(() => {
-    const submitOnEnterAndTab = (e: KeyboardEvent) => {
-      if (e.key === "Enter" || e.key === "Tab") {
-        form.current?.requestSubmit();
-        e.preventDefault();
-      }
-    };
-    textAreaRef?.addEventListener("keydown", submitOnEnterAndTab);
+    const controller = new AbortController();
 
-    return () =>
-      textAreaRef?.removeEventListener("keydown", submitOnEnterAndTab);
+    textAreaRef?.addEventListener(
+      "keydown",
+      function submitOnEnterAndTab(e: KeyboardEvent) {
+        if (e.key === "Enter" || e.key === "Tab") {
+          form.current?.requestSubmit();
+          e.preventDefault();
+        }
+      },
+      { signal: controller.signal }
+    );
+
+    return () => controller.abort();
   }, [textAreaRef]);
 
   useEffect(() => {
-    const navigateViaArrowKeys = (e: KeyboardEvent) => {
-      const scrollTo = (idx: number) => {
-        const children = Array.from(form.current?.children ?? []);
-        children.at(idx)?.scrollIntoView({ block: "nearest" });
-      };
+    const controller = new AbortController();
 
-      if (e.key === "ArrowUp") {
-        setSelectedIndex((curr) => {
-          const res =
-            (curr - 1 + lastSuccessfulMatch.length) %
-            lastSuccessfulMatch.length;
-          scrollTo(res);
-          return res;
-        });
-        e.preventDefault();
-      } else if (e.key === "ArrowDown") {
-        setSelectedIndex((curr) => {
-          const res = (curr + 1) % lastSuccessfulMatch.length;
-          scrollTo(res);
-          return res;
-        });
-        e.preventDefault();
-      }
-      return false;
-    };
-    textAreaRef?.addEventListener("keydown", navigateViaArrowKeys);
+    textAreaRef?.addEventListener(
+      "keydown",
+      function navigateViaArrowKeys(e) {
+        const scrollTo = (idx: number) => {
+          const children = Array.from(form.current?.children ?? []);
+          children.at(idx)?.scrollIntoView({ block: "nearest" });
+        };
 
-    return () =>
-      textAreaRef?.removeEventListener("keydown", navigateViaArrowKeys);
+        if (e.key === "ArrowUp") {
+          setSelectedIndex((curr) => {
+            const res =
+              (curr - 1 + lastSuccessfulMatch.length) %
+              lastSuccessfulMatch.length;
+            scrollTo(res);
+            return res;
+          });
+          e.preventDefault();
+        } else if (e.key === "ArrowDown") {
+          setSelectedIndex((curr) => {
+            const res = (curr + 1) % lastSuccessfulMatch.length;
+            scrollTo(res);
+            return res;
+          });
+          e.preventDefault();
+        }
+        return false;
+      },
+      { signal: controller.signal }
+    );
+
+    return () => controller.abort();
   }, [lastSuccessfulMatch.length, textAreaRef]);
 
   if (matches.length > 0 && lastSuccessfulMatch !== matches) {
@@ -98,7 +106,17 @@ export const EmojiSuggestion = ({
                 if (idx === selectedIndex) form.current?.requestSubmit();
               }}
             />
-            {item.unicode} - :{matches?.[0].value ?? item.label}:
+            <span
+              style={{
+                display: "inline-block",
+                width: "1.5rem",
+                aspectRatio: "1 / 1",
+                textAlign: "center",
+              }}
+            >
+              {item.unicode}
+            </span>{" "}
+            - :{matches?.[0].value ?? item.label}:
           </label>
         ))
       )}

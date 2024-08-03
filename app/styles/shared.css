@@ -14,34 +14,38 @@
 .emoji-suggestion-box {
   --item-height: 2rem;
   min-width: 120px;
-  max-width: 300px;
+  max-width: max(100%, 300px);
   max-height: calc(3 * var(--item-height));
   border-radius: 0.5rem;
   overflow: auto;
 
   label {
     padding: 0 0.5rem;
-    height: var(--item-height);
-    --bg-color: deeppink;
-    background-color: aquamarine;
+    min-height: var(--item-height);
+    --bg-color-base: LightGoldenRodYellow;
+    --bg-color: var(--bg-color-base);
+    --bg-color-light: white;
+    background-color: var(--bg-color);
+
+    @supports (color: rgb(from white r g b)) {
+      --bg-color-light: hsl(
+        from var(--bg-color-base) calc(h - 4) calc(s + 20) calc(l + 5)
+      );
+    }
 
     &:hover {
       cursor: pointer;
-      background-color: orange;
+    }
 
-      @supports (color: rgb(from white r g b)) {
-        background-color: hsl(from var(--bg-color) calc(h - 4) calc(s - 20) l);
-      }
+    &:hover,
+    &:has(input[type="radio"]:checked) {
+      --bg-color: var(--bg-color-light);
     }
 
     input[type="radio"] {
       position: fixed;
       opacity: 0;
       pointer-events: none;
-    }
-
-    &:has(input[type="radio"]:checked) {
-      background-color: var(--bg-color);
     }
   }
 }

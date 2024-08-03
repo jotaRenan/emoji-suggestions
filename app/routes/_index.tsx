@@ -11,10 +11,24 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <h1>Welcome to Remix</h1>
-
-      <TextArea />
+    <div
+      style={{
+        fontFamily: "system-ui, sans-serif",
+        lineHeight: "1.8",
+        minHeight: "100vh",
+        width: "100%",
+        maxWidth: "100%",
+        display: "flex",
+        placeContent: "center",
+        flexDirection: "column",
+        padding: "0 300px",
+        boxSizing: "border-box",
+      }}
+    >
+      <h1>Você pode usar emojis no input abaixo 👇</h1>
+      <div>
+        <TextArea />
+      </div>
     </div>
   );
 }

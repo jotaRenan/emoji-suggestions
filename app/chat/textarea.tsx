@@ -104,6 +104,7 @@ export const TextArea = () => {
       <textarea
         ref={textAreaRef}
         className="anchor-text-input"
+        style={{ fontSize: "3rem" }}
         value={text}
         rows={3}
         onChange={(e) => setText(e.currentTarget.value)}
@@ -173,9 +174,6 @@ export const TextArea = () => {
           }}
         />
       )}
-      <p>{text}</p>
-      {JSON.stringify(isOn, null, 2)}
-      <p>Streak: {streak}</p>
     </>
   );
 };
