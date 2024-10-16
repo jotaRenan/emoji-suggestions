@@ -1,5 +1,6 @@
 import type { MetaFunction, LinksFunction } from "@remix-run/node";
 import { TextArea } from "~/chat/textarea";
+import { NewEmojiSection } from "~/file-upload";
 import styles from "~/styles/shared.css?url";
 
 export const meta: MetaFunction = () => {
@@ -29,6 +30,7 @@ export default function Index() {
       <div>
         <TextArea />
       </div>
+      <NewEmojiSection />
     </div>
   );
 }
