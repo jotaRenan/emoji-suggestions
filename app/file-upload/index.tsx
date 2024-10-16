@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 
 /**
- * 1. move emoji creation section into a native <dialog> component;
+ * 1. ✅ move emoji creation section into a native <dialog> component;
  * 2. implement multiple strategies for resizing:
  *   a. using third library locally;
  *   b. server-side processing base64;
