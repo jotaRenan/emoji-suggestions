@@ -57,50 +57,16 @@ export const NewEmojiSection = () => {
                 if (!canvas || !img) {
                   throw new Error("canvas or img not defined");
                 }
-                // canvas resizing algorithm taken from here:
-                // https://stackoverflow.com/a/19262385
 
-                // set size proportional to image
-                canvas.height = canvas.width * (img.height / img.width);
-
-                // step 1 - resize to 50%
-                const oc = document.createElement("canvas"),
-                  octx = oc.getContext("2d");
-
-                const ctx = canvas.getContext("2d");
-                if (!octx || !ctx) {
-                  throw new Error("octx or ctx not defined");
+                function handleGeneratedBlob(x: Blob | null) {
+                  if (!x) {
+                    setOutputImage(null);
+                    throw new Error("unable to create image");
+                  }
+                  setOutputImage(x);
                 }
-                oc.width = img.width * 0.5;
-                oc.height = img.height * 0.5;
-                octx.drawImage(img, 0, 0, oc.width, oc.height);
 
-                // step 2
-                octx.drawImage(oc, 0, 0, oc.width * 0.5, oc.height * 0.5);
-
-                // step 3, resize to final size
-                ctx.drawImage(
-                  oc,
-                  0,
-                  0,
-                  oc.width * 0.5,
-                  oc.height * 0.5,
-                  0,
-                  0,
-                  canvas.width,
-                  canvas.height
-                );
-                canvas.toBlob(
-                  (x) => {
-                    if (!x) {
-                      setOutputImage(null);
-                      throw new Error("unable to create image");
-                    }
-                    setOutputImage(x);
-                  },
-                  "image/png",
-                  1
-                );
+                makeResizedImage(canvas, img, handleGeneratedBlob);
               }}
             />
           )}
@@ -121,6 +87,46 @@ export const NewEmojiSection = () => {
     </section>
   );
 };
+
+function makeResizedImage(
+  canvas: HTMLCanvasElement,
+  img: HTMLImageElement,
+  handleGeneratedBlob: (x: Blob | null) => void
+) {
+  // canvas resizing algorithm taken from here:
+  // https://stackoverflow.com/a/19262385
+  // set size proportional to image
+  canvas.height = canvas.width * (img.height / img.width);
+
+  // step 1 - resize to 50%
+  const oc = document.createElement("canvas"),
+    octx = oc.getContext("2d");
+
+  const ctx = canvas.getContext("2d");
+  if (!octx || !ctx) {
+    throw new Error("octx or ctx not defined");
+  }
+  oc.width = img.width * 0.5;
+  oc.height = img.height * 0.5;
+  octx.drawImage(img, 0, 0, oc.width, oc.height);
+
+  // step 2
+  octx.drawImage(oc, 0, 0, oc.width * 0.5, oc.height * 0.5);
+
+  // step 3, resize to final size
+  ctx.drawImage(
+    oc,
+    0,
+    0,
+    oc.width * 0.5,
+    oc.height * 0.5,
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+  canvas.toBlob(handleGeneratedBlob, "image/png", 1);
+}
 
 function downloadBlob(blob: Blob) {
   const url = URL.createObjectURL(blob);
