@@ -1,5 +1,6 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
+const STORAGE_KEY = "result";
 /**
  * 1. ✅ move emoji creation section into a native <dialog> component;
  * 2. implement multiple strategies for resizing:
@@ -14,6 +15,11 @@ import { useMemo, useRef, useState } from "react";
 export const NewEmojiSection = () => {
   const [file, setFile] = useState<File | null>(null);
   const [outputImage, setOutputImage] = useState<Blob | null>();
+  const [savedImage, setSavedImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    setSavedImage(window.localStorage.getItem("result"));
+  }, []);
 
   const dialogRef = useRef<HTMLDialogElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -28,10 +34,14 @@ export const NewEmojiSection = () => {
       <button onClick={() => dialogRef.current?.showModal()}>
         Create new emoji
       </button>
+      <img src={savedImage ?? undefined} alt="" />
+
       <dialog ref={dialogRef}>
         <button onClick={() => dialogRef.current?.close()}>Close</button>
         <div>
-          <label htmlFor="uploader">Send your cool emoji</label>
+          <label htmlFor="uploader" style={{ display: "block" }}>
+            Send your cool emoji
+          </label>
           <input
             id="uploader"
             type="file"
@@ -58,12 +68,16 @@ export const NewEmojiSection = () => {
                   throw new Error("canvas or img not defined");
                 }
 
-                function handleGeneratedBlob(x: Blob | null) {
-                  if (!x) {
+                function handleGeneratedBlob(blob: Blob | null) {
+                  if (!blob) {
                     setOutputImage(null);
                     throw new Error("unable to create image");
                   }
-                  setOutputImage(x);
+                  setOutputImage(blob);
+                  read(blob).then((str) => {
+                    setSavedImage(str);
+                    localStorage.setItem(STORAGE_KEY, str);
+                  });
                 }
 
                 makeResizedImage(canvas, img, handleGeneratedBlob);
@@ -144,4 +158,13 @@ function downloadBlob(blob: Blob) {
 
   a.addEventListener("click", clickHandler, false);
   a.click();
+}
+
+function read(blob: Blob) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
 }
